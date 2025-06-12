@@ -3,8 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { getAnonymousUserId } from '@/utils/anonymousUser';
 import MediaCard from './MediaCard';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RefreshCw } from 'lucide-react';
 
 interface Post {
@@ -150,42 +148,14 @@ const PostFeed: React.FC<PostFeedProps> = ({ postType = 'all', refreshTrigger = 
   };
 
   const handleComment = (postId: string) => {
-    // Navigate to post detail view (to be implemented)
-    window.location.href = `/post/${postId}`;
+    console.log(`Opening comments for post ${postId}`);
   };
 
   const handleShare = async (postId: string) => {
-    const shareUrl = `${window.location.origin}/post/${postId}`;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Check out this post on YouthVoice',
-          url: shareUrl
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
-    } else {
-      // Fallback to clipboard
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        toast({
-          title: "Link copied!",
-          description: "Post link has been copied to clipboard"
-        });
-      } catch (error) {
-        console.error('Error copying to clipboard:', error);
-        toast({
-          title: "Share link",
-          description: shareUrl,
-        });
-      }
-    }
+    console.log(`Sharing post ${postId}`);
   };
 
   const handleRepost = async (postId: string) => {
-    // For now, just increment repost count
     try {
       setPosts(prev => prev.map(post => 
         post.id === postId 

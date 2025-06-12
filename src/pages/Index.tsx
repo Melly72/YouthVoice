@@ -1,7 +1,8 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import BottomNavBar from '@/components/BottomNavBar';
+import TopNavBar from '@/components/TopNavBar';
+import ReelsSection from '@/components/ReelsSection';
 import PostFeed from '@/components/PostFeed';
 import UploadForm from '@/components/UploadForm';
 import DonationPage from '@/components/DonationPage';
@@ -10,10 +11,21 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [feedType, setFeedType] = useState<'text' | 'image' | 'video' | 'all'>('all');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handlePostCreated = () => {
     setRefreshTrigger(prev => prev + 1);
     setActiveTab('home'); // Navigate back to home after posting
+  };
+
+  const handleReelClick = (reelId: string) => {
+    console.log(`Opening reel ${reelId}`);
+    // Future implementation for reel detail view
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    // Future implementation for search functionality
   };
 
   const renderContent = () => {
@@ -23,9 +35,9 @@ const Index = () => {
       
       case 'feed':
         return (
-          <div className="min-h-screen bg-black">
+          <div className="min-h-screen bg-black pt-16">
             {/* Feed tabs */}
-            <div className="sticky top-0 bg-black/90 backdrop-blur-md border-b border-gray-800 z-40">
+            <div className="sticky top-16 bg-black/90 backdrop-blur-md border-b border-gray-800 z-40">
               <Tabs value={feedType} onValueChange={(value) => setFeedType(value as typeof feedType)} className="w-full">
                 <TabsList className="grid w-full grid-cols-4 bg-gray-900 mx-4 mt-4 mb-2">
                   <TabsTrigger value="all" className="data-[state=active]:bg-pink-500 data-[state=active]:text-white">All</TabsTrigger>
@@ -44,7 +56,7 @@ const Index = () => {
       
       case 'about':
         return (
-          <div className="min-h-screen bg-black text-white p-6 pb-20">
+          <div className="min-h-screen bg-black text-white p-6 pb-20 pt-20">
             <div className="max-w-md mx-auto space-y-8">
               <h1 className="text-3xl font-bold text-center text-pink-500">About YouthVoice</h1>
               
@@ -79,12 +91,20 @@ const Index = () => {
         );
       
       default: // home
-        return <PostFeed postType="all" refreshTrigger={refreshTrigger} />;
+        return (
+          <div className="min-h-screen bg-black pt-16">
+            <ReelsSection reels={[]} onReelClick={handleReelClick} />
+            <PostFeed postType="all" refreshTrigger={refreshTrigger} />
+          </div>
+        );
     }
   };
 
   return (
     <div className="min-h-screen bg-black">
+      {(activeTab === 'home' || activeTab === 'feed') && (
+        <TopNavBar onSearch={handleSearch} searchQuery={searchQuery} />
+      )}
       {renderContent()}
       <BottomNavBar activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
