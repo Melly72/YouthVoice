@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getAnonymousUserId } from '@/utils/anonymousUser';
-import PostCard from './PostCard';
+import MediaCard from './MediaCard';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -61,7 +60,13 @@ const PostFeed: React.FC<PostFeedProps> = ({ postType = 'all', refreshTrigger = 
         throw error;
       }
 
-      setPosts(data || []);
+      // Type assertion to ensure proper typing
+      const typedPosts: Post[] = (data || []).map(post => ({
+        ...post,
+        type: post.type as 'text' | 'image' | 'video'
+      }));
+
+      setPosts(typedPosts);
 
       // Fetch user's likes
       const anonymousId = getAnonymousUserId();
@@ -199,53 +204,35 @@ const PostFeed: React.FC<PostFeedProps> = ({ postType = 'all', refreshTrigger = 
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <RefreshCw className="h-6 w-6 animate-spin" />
+      <div className="flex justify-center items-center h-screen bg-black">
+        <RefreshCw className="h-8 w-8 animate-spin text-pink-500" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Select value={sortBy} onValueChange={(value: 'latest' | 'trending' | 'top') => setSortBy(value)}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="latest">Latest</SelectItem>
-              <SelectItem value="trending">Trending</SelectItem>
-              <SelectItem value="top">Top</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <Button variant="outline" size="sm" onClick={fetchPosts}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
+    <div className="min-h-screen bg-black">
+      {/* TikTok-style vertical feed */}
+      <div className="snap-y snap-mandatory h-screen overflow-y-scroll">
+        {posts.length === 0 ? (
+          <div className="flex items-center justify-center h-screen text-white">
+            <p className="text-xl">No posts yet. Be the first to share!</p>
+          </div>
+        ) : (
+          posts.map((post) => (
+            <div key={post.id} className="snap-start h-screen">
+              <MediaCard
+                post={post}
+                onLike={() => handleLike(post.id)}
+                onComment={() => handleComment(post.id)}
+                onShare={() => handleShare(post.id)}
+                onRepost={() => handleRepost(post.id)}
+                isLiked={userLikes.has(post.id)}
+              />
+            </div>
+          ))
+        )}
       </div>
-
-      {posts.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <p>No posts yet. Be the first to share something!</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onLike={handleLike}
-              onComment={handleComment}
-              onShare={handleShare}
-              onRepost={handleRepost}
-              isLiked={userLikes.has(post.id)}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
