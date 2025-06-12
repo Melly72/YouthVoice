@@ -9,7 +9,142 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          anonymous_user_id: string
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+        }
+        Insert: {
+          anonymous_user_id: string
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+        }
+        Update: {
+          anonymous_user_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      donations: {
+        Row: {
+          amount: number
+          anonymous_user_id: string | null
+          created_at: string
+          donor_name: string | null
+          id: string
+          message: string | null
+          status: string | null
+          stripe_session_id: string | null
+        }
+        Insert: {
+          amount: number
+          anonymous_user_id?: string | null
+          created_at?: string
+          donor_name?: string | null
+          id?: string
+          message?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
+        }
+        Update: {
+          amount?: number
+          anonymous_user_id?: string | null
+          created_at?: string
+          donor_name?: string | null
+          id?: string
+          message?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
+        }
+        Relationships: []
+      }
+      likes: {
+        Row: {
+          anonymous_user_id: string
+          created_at: string
+          id: string
+          post_id: string
+        }
+        Insert: {
+          anonymous_user_id: string
+          created_at?: string
+          id?: string
+          post_id: string
+        }
+        Update: {
+          anonymous_user_id?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          anonymous_user_id: string
+          comments_count: number | null
+          content: string | null
+          content_url: string | null
+          created_at: string
+          id: string
+          likes_count: number | null
+          reposts_count: number | null
+          title: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          anonymous_user_id: string
+          comments_count?: number | null
+          content?: string | null
+          content_url?: string | null
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          reposts_count?: number | null
+          title?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          anonymous_user_id?: string
+          comments_count?: number | null
+          content?: string | null
+          content_url?: string | null
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          reposts_count?: number | null
+          title?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
